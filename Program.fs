@@ -4,9 +4,16 @@ open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.Hosting
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Http
+open System.Text.Json;
+open Microsoft.AspNetCore.Http
+open System.IO
+open System.Text
 
 module Program =
     let exitCode = 0
+
+    let actions = [| "move"; "eat"; "take"; "put" |];
+    let directions = [| "up"; "down"; "right"; "left" |];
 
     [<Struct>]
     type Ant = { id: int; }
@@ -26,9 +33,12 @@ module Program =
                 webBuilder.Configure(fun app ->
                      app.UseRouting()
                         .UseEndpoints(fun endpoints ->
-                            endpoints.MapGet("/", fun req -> 
-                                //let cn : ComplexNumber= {real = 1; imaginary = 1}
-                                //req.Response.WriteAsJsonAsync(cn)
+                            endpoints.MapGet("/", fun context -> 
+                                  let reader = new StreamReader(context.Request.BodyReader.AsStream(), Encoding.Default)
+                                  let inputStr = reader.ReadToEnd()
+                                  let request = JsonSerializer.Deserialize<Request>(inputStr)
+
+                                  context.Response.WriteAsJsonAsync("sadsa")
                             ) |> ignore
                         ) |> ignore
                 ) |> ignore
