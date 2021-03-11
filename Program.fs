@@ -1,24 +1,39 @@
-namespace AntHive
+namespace FSharpRestApi
 
-open System
-open System.Collections.Generic
-open System.IO
-open System.Linq
-open System.Threading.Tasks
-open Microsoft.AspNetCore
 open Microsoft.AspNetCore.Hosting
-open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.Hosting
-open Microsoft.Extensions.Logging
+open Microsoft.AspNetCore.Builder
+open Microsoft.AspNetCore.Http
 
 module Program =
     let exitCode = 0
 
+    [<Struct>]
+    type Ant = { id: int; }
+
+    [<Struct>]
+    type Order = { antId: int; act: string; dir: string }
+
+    [<Struct>]
+    type Request = { ants: Ant[] }
+
+    [<Struct>]
+    type Responce = { orders: Order[] }
+
     let CreateHostBuilder args =
         Host.CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(fun webBuilder ->
-                webBuilder.UseStartup<Startup>() |> ignore
+                webBuilder.Configure(fun app ->
+                     app.UseRouting()
+                        .UseEndpoints(fun endpoints ->
+                            endpoints.MapGet("/", fun req -> 
+                                //let cn : ComplexNumber= {real = 1; imaginary = 1}
+                                //req.Response.WriteAsJsonAsync(cn)
+                            ) |> ignore
+                        ) |> ignore
+                ) |> ignore
             )
+
 
     [<EntryPoint>]
     let main args =
