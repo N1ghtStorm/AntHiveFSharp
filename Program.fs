@@ -5,13 +5,15 @@ open Microsoft.Extensions.Hosting
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Http
 open System.Text.Json;
-open Microsoft.AspNetCore.Http
 open System.IO
 open System.Text
+open System
+open System.Linq
 
 module Program =
     let exitCode = 0
 
+    let rand = new Random(DateTime.Now.Millisecond);
     let actions = [| "move"; "eat"; "take"; "put" |];
     let directions = [| "up"; "down"; "right"; "left" |];
 
@@ -37,8 +39,9 @@ module Program =
                                   let reader = new StreamReader(context.Request.BodyReader.AsStream(), Encoding.Default)
                                   let inputStr = reader.ReadToEnd()
                                   let request = JsonSerializer.Deserialize<Request>(inputStr)
-
-                                  context.Response.WriteAsJsonAsync("sadsa")
+                                  let randNum = rand.Next(directions.Length)
+                                  let orders = request.ants.Select(fun a -> {antId = a.id; dir = directions.[randNum]; act = "move"})
+                                  context.Response.WriteAsJsonAsync(orders)
                             ) |> ignore
                         ) |> ignore
                 ) |> ignore
