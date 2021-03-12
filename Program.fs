@@ -32,12 +32,12 @@ module Program =
                      app.UseRouting()
                         .UseEndpoints(fun endpoints ->
                             endpoints.MapGet("/", fun context -> 
-                                  let reader = new StreamReader(context.Request.BodyReader.AsStream(), Encoding.Default)
-                                  let inputStr = reader.ReadToEnd()
-                                  let request = JsonSerializer.Deserialize(inputStr)
-                                  let orders = request.ants.Select(fun ant -> {antId = ant.id; dir = directions.[rand.Next(directions.Length)]; act = "move"}).ToArray()
-                                  let responce = {orders = orders}
-                                  context.Response.WriteAsJsonAsync(responce)
+                                let reader = new StreamReader(context.Request.BodyReader.AsStream(), Encoding.Default)
+                                let inputStr = reader.ReadToEnd()
+                                let request = JsonSerializer.Deserialize(inputStr)
+                                let orders = request.ants.Select(fun ant -> {antId = ant.id; dir = directions.[rand.Next(directions.Length)]; act = "move"}).ToArray()
+                                let responce = {orders = orders}
+                                context.Response.WriteAsJsonAsync(responce) 
                             ) |> ignore
                         ) |> ignore
                 ) |> ignore
