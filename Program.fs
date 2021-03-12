@@ -17,10 +17,8 @@ module Program =
     let actions = [| "move"; "eat"; "take"; "put" |];
     let directions = [| "up"; "down"; "right"; "left" |];
 
-    [<Struct>]
     type Ant = { id: int; }
 
-    [<Struct>]
     type Order = { antId: int; act: string; dir: string }
 
     type Request = { ants: Ant[] }
@@ -36,8 +34,8 @@ module Program =
                             endpoints.MapGet("/", fun context -> 
                                   let reader = new StreamReader(context.Request.BodyReader.AsStream(), Encoding.Default)
                                   let inputStr = reader.ReadToEnd()
-                                  let request = JsonSerializer.Deserialize<Request>(inputStr)
-                                  let orders = request.ants.Select(fun a -> {antId = a.id; dir = directions.[rand.Next(directions.Length)]; act = "move"}).ToArray()
+                                  let request = JsonSerializer.Deserialize(inputStr)
+                                  let orders = request.ants.Select(fun ant -> {antId = ant.id; dir = directions.[rand.Next(directions.Length)]; act = "move"}).ToArray()
                                   let responce = {orders = orders}
                                   context.Response.WriteAsJsonAsync(responce)
                             ) |> ignore
