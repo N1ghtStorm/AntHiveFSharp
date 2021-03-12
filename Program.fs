@@ -23,25 +23,23 @@ module Program =
     [<Struct>]
     type Order = { antId: int; act: string; dir: string }
 
-    [<Struct>]
     type Request = { ants: Ant[] }
 
-    [<Struct>]
     type Responce = { orders: Order[] }
 
     let CreateHostBuilder args =
         Host.CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(fun webBuilder ->
-                webBuilder.Configure(fun app ->
+                webBuilder.UseUrls("http://*:7070").Configure(fun app ->
                      app.UseRouting()
                         .UseEndpoints(fun endpoints ->
                             endpoints.MapGet("/", fun context -> 
                                   let reader = new StreamReader(context.Request.BodyReader.AsStream(), Encoding.Default)
                                   let inputStr = reader.ReadToEnd()
                                   let request = JsonSerializer.Deserialize<Request>(inputStr)
-                                  let randNum = rand.Next(directions.Length)
-                                  let orders = request.ants.Select(fun a -> {antId = a.id; dir = directions.[randNum]; act = "move"})
-                                  context.Response.WriteAsJsonAsync(orders)
+                                  let orders = request.ants.Select(fun a -> {antId = a.id; dir = directions.[rand.Next(directions.Length)]; act = "move"}).ToArray()
+                                  let responce = {orders = orders}
+                                  context.Response.WriteAsJsonAsync(responce)
                             ) |> ignore
                         ) |> ignore
                 ) |> ignore
